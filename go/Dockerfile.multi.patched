@@ -1,35 +1,25 @@
-# Patched Multi-Stage Dockerfile with Security Hardening
 # Stage 1: Build
-FROM golang:1.27.2-bookworm AS builder
+FROM golang:1.21.13-bookworm as builder
 
 WORKDIR /app
-
 COPY go.mod go.sum ./
 RUN go mod download
-
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hello-server
 
-# Stage 2: Runtime
-# FROM debian:bookworm-slim
-FROM debian:trixie-slim
+# Stage 2: Runtime (Alpine)
+FROM alpine:3.19
 
-# Install CA certificates (for HTTPS)
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+# Install CA certificates
+RUN apk add --no-cache ca-certificates
 
 # Create non-root user
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 COPY --from=builder --chown=appuser:appgroup /hello-server /app/hello-server
 
 USER appuser
-
 EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:8080/ || exit 1
-
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8080/ || exit 1
 CMD ["/app/hello-server"]
