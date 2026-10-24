@@ -1,0 +1,1 @@
+COSIGN_EXPERIMENTAL=1 cosign verify --key cosign.pub --allow-insecure-registry localhost:5001/hello-melange-apko-go:v2-multi-patched

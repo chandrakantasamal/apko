@@ -1,29 +1,19 @@
-# Multi-stage Dockerfile for Go
+# Original Multi-Stage Dockerfile
 # Stage 1: Build
-FROM golang:1.21.0-slim as builder
+FROM golang:1.21.13-bookworm AS builder
 
 WORKDIR /app
 
-# Copy Go module files first for caching
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
 COPY . .
-
-# Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o /hello-server
 
 # Stage 2: Runtime
-FROM alpine:latest
+FROM debian:bookworm-slim
 
 WORKDIR /app
-
-# Create non-root user
-RUN adduser -D appuser && chown -R appuser:appuser /app
-USER appuser
-
-# Copy binary from builder
 COPY --from=builder /hello-server /app/hello-server
 
 EXPOSE 8080
