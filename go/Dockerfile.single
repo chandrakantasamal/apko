@@ -1,0 +1,22 @@
+# Single-stage Dockerfile for Go
+FROM golang:1.21-slim as builder
+
+WORKDIR /app
+
+# Copy Go module files first for caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o /hello-server
+
+# Run as non-root user
+RUN useradd -r appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8080
+
+CMD ["/hello-server"]

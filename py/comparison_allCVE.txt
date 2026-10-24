@@ -1,0 +1,9 @@
+=== Vulnerability Comparison ===
+
+Metric		Single-Stage	Multi-Stage
+----------------------------------------
+Total Vulns	456		456
+Critical		6		6
+High		119		119
+Medium		172		172
+Low		155		155

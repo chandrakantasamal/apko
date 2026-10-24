@@ -1,0 +1,35 @@
+BEFORE-AND-AFTER CRITICAL CVE COMPARISON
+=======================================================
+
+Original single-stage: 4 unique Critical CVEs
+  CVE-2026-13221
+  CVE-2026-31789
+  CVE-2026-42496
+  CVE-2026-8376
+
+Original multi-stage: 4 unique Critical CVEs
+  CVE-2026-13221
+  CVE-2026-31789
+  CVE-2026-42496
+  CVE-2026-8376
+
+Patched single-stage: 0 unique Critical CVEs
+
+Patched multi-stage: 0 unique Critical CVEs
+
+Comparison: Original single-stage -> Patched single-stage
+Before: 4 unique Critical CVEs
+After: 0 unique Critical CVEs
+Resolved from scan results: 4
+Still reported: 0
+Newly reported: 0
+Still reported CVEs: None
+
+Comparison: Original multi-stage -> Patched multi-stage
+Before: 4 unique Critical CVEs
+After: 0 unique Critical CVEs
+Resolved from scan results: 4
+Still reported: 0
+Newly reported: 0
+Still reported CVEs: None
+

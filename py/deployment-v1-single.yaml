@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v1-single
+  namespace: hello-melange
+  labels:
+    app: hello-melange
+    version: v1-single
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-melange
+      version: v1-single
+  template:
+    metadata:
+      labels:
+        app: hello-melange
+        version: v1-single
+    spec:
+      containers:
+      - name: app
+        image: localhost:5001/hello-melange-apko:v1-single
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always  # Force pull latest
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-v1-single
+  namespace: hello-melange
+spec:
+  selector:
+    app: hello-melange
+    version: v1-single
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

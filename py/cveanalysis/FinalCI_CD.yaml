@@ -1,0 +1,53 @@
+
+name: secure-container-release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-scan-attest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build \
+            -t "$IMAGE_TAG" .
+
+      - name: Scan image
+        run: |
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            "$IMAGE_TAG"
+
+      - name: Generate SBOM
+        run: |
+          syft "$IMAGE_TAG" \
+            -o spdx-json=sbom.spdx.json
+
+      - name: Push approved image
+        run: |
+          # Authenticate to the enterprise registry
+          # Push using a unique release tag
+          docker push "$IMAGE_TAG"
+
+      - name: Resolve immutable digest
+        run: |
+          # Obtain the actual registry manifest digest.
+          # Set IMAGE_REF to registry/repository@sha256:...
+          echo "Resolve digest from registry here"
+
+      - name: Sign and attest
+        run: |
+          # Use an approved workload identity or
+          # KMS-backed signing identity.
+          # Sign the immutable digest and attest SBOM.
+          echo "Sign and attest approved digest here"

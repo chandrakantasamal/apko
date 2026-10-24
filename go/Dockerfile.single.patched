@@ -1,0 +1,38 @@
+# Stage: Build and Runtime (Single-Stage)
+# Upgraded base image: golang:1.22-slim (latest stable)
+FROM golang:1.22-slim
+
+# Set non-root user for security
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+
+# Install dependencies and build
+WORKDIR /app
+
+# Copy go.mod and go.sum first for better layer caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build with optimizations
+# - CGO_ENABLED=0: Statically linked binary (no C dependencies)
+# - GOOS=linux: Target OS
+# - ldflags="-w -s": Reduce binary size
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hello-server
+
+# Change ownership to non-root user
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Runtime configuration
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:8080/ || exit 1
+
+# Exec form (no shell injection)
+CMD ["/hello-server"]
