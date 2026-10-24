@@ -1,6 +1,6 @@
 # Stage: Build and Runtime (Single-Stage)
-# Upgraded base image: golang:1.22-slim (latest stable)
-FROM golang:1.22-slim
+# Upgraded base image: golang:1.22.0-slim (latest stable)
+FROM golang:1.22.0-slim
 
 # Set non-root user for security
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser

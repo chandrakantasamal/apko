@@ -1,6 +1,6 @@
 # Stage 1: Build
-# Upgraded base image: golang:1.22-slim
-FROM golang:1.22-slim as builder
+# Upgraded base image: golang:1.22.0-slim
+FROM golang:1.22.0-slim as builder
 
 # Install build dependencies
 WORKDIR /app

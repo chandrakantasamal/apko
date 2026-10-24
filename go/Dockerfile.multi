@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for Go
 # Stage 1: Build
-FROM golang:1.21-slim as builder
+FROM golang:1.21.0-slim as builder
 
 WORKDIR /app
 
