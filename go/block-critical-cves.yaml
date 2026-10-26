@@ -1,0 +1,10 @@
+apiVersion: aquasecurity.github.io/v1alpha1
+kind: ClusterVulnerabilityPolicy
+metadata:
+  name: block-critical-cves
+spec:
+  severity: CRITICAL
+  action: Block  # Blocks deployments with critical CVEs
+  namespaces: 
+   hello-melange-go-cve-blocked
+  # - "*"  # Applies to all namespaces

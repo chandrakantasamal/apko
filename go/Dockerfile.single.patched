@@ -1,28 +1,35 @@
-# Patched Single-Stage Dockerfile with Security Hardening
-FROM golang:1.27.2-bookworm
+# Use a newer Go version with updated Debian patches
+FROM golang:1.22.3-bookworm
 
-# Create non-root user
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+# ===== CRITICAL: Update OS packages to patch CVEs =====
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# ===== Security Hardening =====
+# Create non-root user to mitigate container escape vulnerabilities
+RUN groupadd -r appgroup && \
+    useradd -r -g appgroup appuser
 
 WORKDIR /app
 
-# Copy Go module files first for caching
+# ===== Optimized Build (Reduces Binary Size) =====
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
 COPY . .
-
-# Build with optimizations
+# Static linking + strip debug symbols to minimize attack surface
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hello-server
 
-# Set permissions and switch to non-root user
+# ===== Permissions & User Context =====
 RUN chown -R appuser:appgroup /app
 USER appuser
 
+# ===== Runtime Config =====
 EXPOSE 8080
 
-# Health check
+# ===== Health Check (Auto-Recovery) =====
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD curl -f http://localhost:8080/ || exit 1
 

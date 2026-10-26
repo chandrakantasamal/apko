@@ -7,7 +7,7 @@ docker build -t localhost:5001/hello-melange-apko-go:v1-single -f Dockerfile.sin
 docker build -t localhost:5001/hello-melange-apko-go:v1-multi -f Dockerfile.multi .
 
 # Patched Single-Stage (upgraded base image)
-docker build -t localhost:5001/hello-melange-apko-go:v2-single-patched -f Dockerfile.single .
+docker build -t localhost:5001/hello-melange-apko-go:v2-single-patched -f Dockerfile.single.patched .
 
 # Patched Multi-Stage (upgraded base image)
-docker build -t localhost:5001/hello-melange-apko-go:v2-multi-patched -f Dockerfile.multi .
+docker build -t localhost:5001/hello-melange-apko-go:v2-multi-patched -f Dockerfile.multi.patched .

@@ -1,13 +1,16 @@
 # Stage 1: Build
+#FROM golang:1.26-alpine AS builder
 FROM golang:1.21.13-bookworm as builder
+ENV GOTOOLCHAIN=local
 
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hello-server
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-w -s" -o /hello-server
 
 # Stage 2: Runtime (Alpine)
+#FROM alpine:3.24
 FROM alpine:3.19
 
 # Install CA certificates
@@ -21,5 +24,5 @@ COPY --from=builder --chown=appuser:appgroup /hello-server /app/hello-server
 
 USER appuser
 EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8080/ || exit 1
+HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost:8080/ || exit 1
 CMD ["/app/hello-server"]
